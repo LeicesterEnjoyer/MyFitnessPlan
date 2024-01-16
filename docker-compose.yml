@@ -1,0 +1,29 @@
+version: '2.1'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3200:3200"
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: my_fitness_plan_db
+    ports:
+      - "4406:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+volumes:
+  mysql_data:
